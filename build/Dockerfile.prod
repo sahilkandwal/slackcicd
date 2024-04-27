@@ -1,6 +1,7 @@
-# Stage 1: Build stage using Node.js image
-FROM node:14 AS build
+# Use a base image compatible with Google Cloud Build
+FROM gcr.io/cloud-builders/npm AS build
 
+# Set the working directory
 WORKDIR /app
 
 # Copy package.json and package-lock.json files
@@ -12,14 +13,14 @@ RUN npm ci --only=production
 # Copy the rest of the application files
 COPY . .
 
-# Stage 2: Final stage using Ubuntu image
-FROM ubuntu:16.04
+# Final stage using distroless Node.js image
+FROM gcr.io/distroless/nodejs:14
 
-# Copy files from the build stage
+# Copy built application files from the build stage
 COPY --from=build /app /app
 
 # Set the working directory
 WORKDIR /app
 
 # Set CMD to run your application
-CMD ["node", "app.js"]
+CMD ["app.js"]
