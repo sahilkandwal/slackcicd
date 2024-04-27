@@ -1,17 +1,25 @@
+# Stage 1: Build stage using Node.js image
 FROM node:14 AS build
 
 WORKDIR /app
 
+# Copy package.json and package-lock.json files
 COPY package*.json ./
 
+# Install production dependencies
 RUN npm ci --only=production
 
+# Copy the rest of the application files
 COPY . .
 
-FROM gcr.io/distroless/nodejs:14
+# Stage 2: Final stage using Ubuntu image
+FROM ubuntu:16.04
 
+# Copy files from the build stage
 COPY --from=build /app /app
 
+# Set the working directory
 WORKDIR /app
 
-CMD ["app.js"]
+# Set CMD to run your application
+CMD ["node", "app.js"]
