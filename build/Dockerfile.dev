@@ -1,4 +1,7 @@
-FROM node:14.15.1
+FROM ubuntu:latest
+
+# Install Node.js
+RUN apt-get update && apt-get install -y nodejs npm
 
 WORKDIR /app
 
