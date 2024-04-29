@@ -1,9 +1,7 @@
 version: 2.1
-
 orbs:
   node: circleci/node@4.1.0
   aws-ecr: circleci/aws-ecr@6.15.0
-
 jobs:
   test:
     executor:
@@ -21,19 +19,17 @@ jobs:
           destination: raw-test-output
       - store_test_results:
           path: /tmp/test-results
-
-  # Define the 'aws-ecr/build-and-push-image' job
-  aws-ecr/build-and-push-image:
-    # Define job settings
-    repo: slackcicd
-    tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
-    dockerfile: build/Dockerfile.prod
-    path: .
-    requires:
-      - test
-
+  
 workflows:
   node-tests:
     jobs:
       - test
-      - aws-ecr/build-and-push-image  # Include the 'aws-ecr/build-and-push-image' job in the 'node-tests' workflow
+
+      # Envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_ECR_ACCOUNT_URL
+    - aws-ecr/build-and-push-image:
+        repo: slackcicd
+        tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
+        dockerfile: build/Dockerfile.prod
+        path: .
+        requires:
+          - test
