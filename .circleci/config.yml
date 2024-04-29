@@ -23,7 +23,7 @@ jobs:
 workflows:
   node-tests:
     jobs:
-      echo "check"
+      - echo "check"
       - test
       - aws-ecr/build-and-push-image:
           repo: slackcicd
